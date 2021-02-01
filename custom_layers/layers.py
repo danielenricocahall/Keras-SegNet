@@ -53,26 +53,25 @@ class MaxUnpooling2D(Layer):
 
     def call(self, inputs, output_shape=None):
         updates, mask = inputs[0], inputs[1]
-        with tf.variable_scope(self.name):
-            mask = K.cast(mask, 'int32')
-            input_shape = tf.shape(updates, out_type='int32')
+        mask = K.cast(mask, 'int32')
+        input_shape = tf.shape(updates, out_type='int32')
 
-            if output_shape is None:
-                output_shape = (
-                    input_shape[0],
-                    input_shape[1] * self.size[0],
-                    input_shape[2] * self.size[1],
-                    input_shape[3])
+        if output_shape is None:
+            output_shape = (
+                input_shape[0],
+                input_shape[1] * self.size[0],
+                input_shape[2] * self.size[1],
+                input_shape[3])
 
-            ret = tf.scatter_nd(K.expand_dims(K.flatten(mask)),
-                                  K.flatten(updates),
-                                  [K.prod(output_shape)])
+        ret = tf.scatter_nd(K.expand_dims(K.flatten(mask)),
+                              K.flatten(updates),
+                              [K.prod(output_shape)])
 
-            input_shape = updates.shape
-            out_shape = [-1,
-                         input_shape[1] * self.size[0],
-                         input_shape[2] * self.size[1],
-                         input_shape[3]]
+        input_shape = updates.shape
+        out_shape = [-1,
+                     input_shape[1] * self.size[0],
+                     input_shape[2] * self.size[1],
+                     input_shape[3]]
         return K.reshape(ret, out_shape)
 
     def compute_output_shape(self, input_shape):

@@ -6,7 +6,7 @@ import numpy as np
 from custom_layers.layers import MaxPoolingWithArgmax2D, MaxUnpooling2D
 
 
-def test_max_pooling_argmax(tf_session):
+def test_max_pooling_argmax():
     # GIVEN we have some dummy test data which is 1-4 arranged as a 2 x 2
     data = np.asarray([[
         [1, 2],
@@ -18,14 +18,14 @@ def test_max_pooling_argmax(tf_session):
     inp = Input(shape=(2, 2, 1))
     out = MaxPoolingWithArgmax2D()(inp)
     model = Model(inp, out)
-    result = model.predict([tf_session.run(tensor)])
+    result = model.predict([tensor])
 
     # THEN the output should contain the index of the maximum argument (3), and the maximum argument (4)
     assert result[0][0].tolist() == [[[4.0]]]
     assert result[1][0].tolist() == [[[3.0]]]
 
 
-def test_max_unpooling(tf_session):
+def test_max_unpooling():
     # GIVEN we have some dummy test data which is 1-4 arranged as a 2 x 2
     data = np.asarray([[
         [1, 2],
@@ -38,7 +38,7 @@ def test_max_unpooling(tf_session):
     pool_1, mask_1 = MaxPoolingWithArgmax2D()(inp)
     out = MaxUnpooling2D()([pool_1, mask_1])
     model = Model(inp, out)
-    result = model.predict([tf_session.run(tensor)])
+    result = model.predict([tensor])
 
     # THEN the output should be a sparse version of our input (only the maximum argument is retained)
     assert result.tolist()[0] == [[[0.0], [0.0]], [[0.0], [4.0]]]

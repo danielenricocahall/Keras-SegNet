@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Layer
@@ -21,9 +20,9 @@ class MaxPoolingWithArgmax2D(Layer):
         padding = self.padding
         pool_size = self.pool_size
         strides = self.strides
-        ksize = [1, pool_size[0], pool_size[1], 1]
+        ksize = [1, *pool_size, 1]
         padding = padding.upper()
-        strides = [1, strides[0], strides[1], 1]
+        strides = [1, *strides, 1]
         output, argmax = tf.nn.max_pool_with_argmax(
             inputs,
             ksize=ksize,
@@ -64,8 +63,8 @@ class MaxUnpooling2D(Layer):
                 input_shape[3])
 
         ret = tf.scatter_nd(K.expand_dims(K.flatten(mask)),
-                              K.flatten(updates),
-                              [K.prod(output_shape)])
+                            K.flatten(updates),
+                            [K.prod(output_shape)])
 
         input_shape = updates.shape
         out_shape = [-1,
@@ -77,8 +76,8 @@ class MaxUnpooling2D(Layer):
     def compute_output_shape(self, input_shape):
         mask_shape = input_shape[1]
         return (
-                mask_shape[0],
-                mask_shape[1]*self.size[0],
-                mask_shape[2]*self.size[1],
-                mask_shape[3]
-                )
+            mask_shape[0],
+            mask_shape[1] * self.size[0],
+            mask_shape[2] * self.size[1],
+            mask_shape[3]
+        )
